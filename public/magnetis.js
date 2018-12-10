@@ -2489,6 +2489,43 @@ function _Http_track(router, xhr, tracker)
 }
 
 
+var _Bitwise_and = F2(function(a, b)
+{
+	return a & b;
+});
+
+var _Bitwise_or = F2(function(a, b)
+{
+	return a | b;
+});
+
+var _Bitwise_xor = F2(function(a, b)
+{
+	return a ^ b;
+});
+
+function _Bitwise_complement(a)
+{
+	return ~a;
+};
+
+var _Bitwise_shiftLeftBy = F2(function(offset, a)
+{
+	return a << offset;
+});
+
+var _Bitwise_shiftRightBy = F2(function(offset, a)
+{
+	return a >> offset;
+});
+
+var _Bitwise_shiftRightZfBy = F2(function(offset, a)
+{
+	return a >>> offset;
+});
+
+
+
 
 // HELPERS
 
@@ -4044,43 +4081,6 @@ function _VirtualDom_dekey(keyedNode)
 		b: keyedNode.b
 	};
 }
-
-
-
-var _Bitwise_and = F2(function(a, b)
-{
-	return a & b;
-});
-
-var _Bitwise_or = F2(function(a, b)
-{
-	return a | b;
-});
-
-var _Bitwise_xor = F2(function(a, b)
-{
-	return a ^ b;
-});
-
-function _Bitwise_complement(a)
-{
-	return ~a;
-};
-
-var _Bitwise_shiftLeftBy = F2(function(offset, a)
-{
-	return a << offset;
-});
-
-var _Bitwise_shiftRightBy = F2(function(offset, a)
-{
-	return a >> offset;
-});
-
-var _Bitwise_shiftRightZfBy = F2(function(offset, a)
-{
-	return a >>> offset;
-});
 
 
 
@@ -6572,6 +6572,454 @@ var author$project$Main$update = F2(
 				}
 		}
 	});
+var cuducos$elm_format_number$Helpers$FormattedNumber = F5(
+	function (original, integers, decimals, prefix, suffix) {
+		return {decimals: decimals, integers: integers, original: original, prefix: prefix, suffix: suffix};
+	});
+var cuducos$elm_format_number$Helpers$Negative = {$: 'Negative'};
+var cuducos$elm_format_number$Helpers$Positive = {$: 'Positive'};
+var cuducos$elm_format_number$Helpers$Zero = {$: 'Zero'};
+var elm$core$List$append = F2(
+	function (xs, ys) {
+		if (!ys.b) {
+			return xs;
+		} else {
+			return A3(elm$core$List$foldr, elm$core$List$cons, ys, xs);
+		}
+	});
+var elm$core$List$singleton = function (value) {
+	return _List_fromArray(
+		[value]);
+};
+var elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var elm$core$String$concat = function (strings) {
+	return A2(elm$core$String$join, '', strings);
+};
+var cuducos$elm_format_number$Helpers$classify = function (formatted) {
+	var onlyZeros = A2(
+		elm$core$String$all,
+		function (_char) {
+			return _Utils_eq(
+				_char,
+				_Utils_chr('0'));
+		},
+		elm$core$String$concat(
+			A2(
+				elm$core$List$append,
+				formatted.integers,
+				elm$core$List$singleton(
+					A2(elm$core$Maybe$withDefault, '', formatted.decimals)))));
+	return onlyZeros ? cuducos$elm_format_number$Helpers$Zero : ((formatted.original < 0) ? cuducos$elm_format_number$Helpers$Negative : cuducos$elm_format_number$Helpers$Positive);
+};
+var elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var elm$core$String$slice = _String_slice;
+var elm$core$String$dropRight = F2(
+	function (n, string) {
+		return (n < 1) ? string : A3(elm$core$String$slice, 0, -n, string);
+	});
+var elm$core$String$length = _String_length;
+var elm$core$String$right = F2(
+	function (n, string) {
+		return (n < 1) ? '' : A3(
+			elm$core$String$slice,
+			-n,
+			elm$core$String$length(string),
+			string);
+	});
+var cuducos$elm_format_number$Helpers$splitThousands = function (integers) {
+	var reversedSplitThousands = function (value) {
+		return (elm$core$String$length(value) > 3) ? A2(
+			elm$core$List$cons,
+			A2(elm$core$String$right, 3, value),
+			reversedSplitThousands(
+				A2(elm$core$String$dropRight, 3, value))) : _List_fromArray(
+			[value]);
+	};
+	return elm$core$List$reverse(
+		reversedSplitThousands(integers));
+};
+var elm$core$List$drop = F2(
+	function (n, list) {
+		drop:
+		while (true) {
+			if (n <= 0) {
+				return list;
+			} else {
+				if (!list.b) {
+					return list;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs;
+					n = $temp$n;
+					list = $temp$list;
+					continue drop;
+				}
+			}
+		}
+	});
+var elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return elm$core$Maybe$Just(x);
+	} else {
+		return elm$core$Maybe$Nothing;
+	}
+};
+var elm$core$String$filter = _String_filter;
+var elm$core$Basics$ge = _Utils_ge;
+var elm$core$Basics$not = _Basics_not;
+var elm$core$Basics$abs = function (n) {
+	return (n < 0) ? (-n) : n;
+};
+var elm$core$Basics$isInfinite = _Basics_isInfinite;
+var elm$core$Basics$isNaN = _Basics_isNaN;
+var elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return elm$core$Maybe$Nothing;
+		}
+	});
+var elm$core$String$fromFloat = _String_fromNumber;
+var elm$core$String$cons = _String_cons;
+var elm$core$String$fromChar = function (_char) {
+	return A2(elm$core$String$cons, _char, '');
+};
+var elm$core$Bitwise$and = _Bitwise_and;
+var elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
+var elm$core$String$repeatHelp = F3(
+	function (n, chunk, result) {
+		return (n <= 0) ? result : A3(
+			elm$core$String$repeatHelp,
+			n >> 1,
+			_Utils_ap(chunk, chunk),
+			(!(n & 1)) ? result : _Utils_ap(result, chunk));
+	});
+var elm$core$String$repeat = F2(
+	function (n, chunk) {
+		return A3(elm$core$String$repeatHelp, n, chunk, '');
+	});
+var elm$core$String$padRight = F3(
+	function (n, _char, string) {
+		return _Utils_ap(
+			string,
+			A2(
+				elm$core$String$repeat,
+				n - elm$core$String$length(string),
+				elm$core$String$fromChar(_char)));
+	});
+var elm$core$String$reverse = _String_reverse;
+var elm$core$Basics$neq = _Utils_notEqual;
+var elm$core$List$any = F2(
+	function (isOkay, list) {
+		any:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (isOkay(x)) {
+					return true;
+				} else {
+					var $temp$isOkay = isOkay,
+						$temp$list = xs;
+					isOkay = $temp$isOkay;
+					list = $temp$list;
+					continue any;
+				}
+			}
+		}
+	});
+var elm$core$String$foldr = _String_foldr;
+var elm$core$String$toList = function (string) {
+	return A3(elm$core$String$foldr, elm$core$List$cons, _List_Nil, string);
+};
+var myrho$elm_round$Round$addSign = F2(
+	function (signed, str) {
+		var isNotZero = A2(
+			elm$core$List$any,
+			function (c) {
+				return (!_Utils_eq(
+					c,
+					_Utils_chr('0'))) && (!_Utils_eq(
+					c,
+					_Utils_chr('.')));
+			},
+			elm$core$String$toList(str));
+		return _Utils_ap(
+			(signed && isNotZero) ? '-' : '',
+			str);
+	});
+var elm$core$Char$fromCode = _Char_fromCode;
+var myrho$elm_round$Round$increaseNum = function (_n0) {
+	var head = _n0.a;
+	var tail = _n0.b;
+	if (_Utils_eq(
+		head,
+		_Utils_chr('9'))) {
+		var _n1 = elm$core$String$uncons(tail);
+		if (_n1.$ === 'Nothing') {
+			return '01';
+		} else {
+			var headtail = _n1.a;
+			return A2(
+				elm$core$String$cons,
+				_Utils_chr('0'),
+				myrho$elm_round$Round$increaseNum(headtail));
+		}
+	} else {
+		var c = elm$core$Char$toCode(head);
+		return ((c >= 48) && (c < 57)) ? A2(
+			elm$core$String$cons,
+			elm$core$Char$fromCode(c + 1),
+			tail) : '0';
+	}
+};
+var myrho$elm_round$Round$splitComma = function (str) {
+	var _n0 = A2(elm$core$String$split, '.', str);
+	if (_n0.b) {
+		if (_n0.b.b) {
+			var before = _n0.a;
+			var _n1 = _n0.b;
+			var after = _n1.a;
+			return _Utils_Tuple2(before, after);
+		} else {
+			var before = _n0.a;
+			return _Utils_Tuple2(before, '0');
+		}
+	} else {
+		return _Utils_Tuple2('0', '0');
+	}
+};
+var elm$core$String$dropLeft = F2(
+	function (n, string) {
+		return (n < 1) ? string : A3(
+			elm$core$String$slice,
+			n,
+			elm$core$String$length(string),
+			string);
+	});
+var elm$core$String$startsWith = _String_startsWith;
+var elm$core$String$toInt = _String_toInt;
+var elm$core$Tuple$mapFirst = F2(
+	function (func, _n0) {
+		var x = _n0.a;
+		var y = _n0.b;
+		return _Utils_Tuple2(
+			func(x),
+			y);
+	});
+var myrho$elm_round$Round$toDecimal = function (fl) {
+	var _n0 = A2(
+		elm$core$String$split,
+		'e',
+		elm$core$String$fromFloat(
+			elm$core$Basics$abs(fl)));
+	if (_n0.b) {
+		if (_n0.b.b) {
+			var num = _n0.a;
+			var _n1 = _n0.b;
+			var exp = _n1.a;
+			var e = A2(
+				elm$core$Maybe$withDefault,
+				0,
+				elm$core$String$toInt(
+					A2(elm$core$String$startsWith, '+', exp) ? A2(elm$core$String$dropLeft, 1, exp) : exp));
+			var _n2 = myrho$elm_round$Round$splitComma(num);
+			var before = _n2.a;
+			var after = _n2.b;
+			var total = _Utils_ap(before, after);
+			var zeroed = (e < 0) ? A2(
+				elm$core$Maybe$withDefault,
+				'0',
+				A2(
+					elm$core$Maybe$map,
+					function (_n3) {
+						var a = _n3.a;
+						var b = _n3.b;
+						return a + ('.' + b);
+					},
+					A2(
+						elm$core$Maybe$map,
+						elm$core$Tuple$mapFirst(elm$core$String$fromChar),
+						elm$core$String$uncons(
+							_Utils_ap(
+								A2(
+									elm$core$String$repeat,
+									elm$core$Basics$abs(e),
+									'0'),
+								total))))) : A3(
+				elm$core$String$padRight,
+				e + 1,
+				_Utils_chr('0'),
+				total);
+			return _Utils_ap(
+				(fl < 0) ? '-' : '',
+				zeroed);
+		} else {
+			var num = _n0.a;
+			return _Utils_ap(
+				(fl < 0) ? '-' : '',
+				num);
+		}
+	} else {
+		return '';
+	}
+};
+var myrho$elm_round$Round$roundFun = F3(
+	function (functor, s, fl) {
+		if (elm$core$Basics$isInfinite(fl) || elm$core$Basics$isNaN(fl)) {
+			return elm$core$String$fromFloat(fl);
+		} else {
+			var signed = fl < 0;
+			var _n0 = myrho$elm_round$Round$splitComma(
+				myrho$elm_round$Round$toDecimal(
+					elm$core$Basics$abs(fl)));
+			var before = _n0.a;
+			var after = _n0.b;
+			var r = elm$core$String$length(before) + s;
+			var normalized = _Utils_ap(
+				A2(elm$core$String$repeat, (-r) + 1, '0'),
+				A3(
+					elm$core$String$padRight,
+					r,
+					_Utils_chr('0'),
+					_Utils_ap(before, after)));
+			var totalLen = elm$core$String$length(normalized);
+			var roundDigitIndex = A2(elm$core$Basics$max, 1, r);
+			var increase = A2(
+				functor,
+				signed,
+				A3(elm$core$String$slice, roundDigitIndex, totalLen, normalized));
+			var remains = A3(elm$core$String$slice, 0, roundDigitIndex, normalized);
+			var num = increase ? elm$core$String$reverse(
+				A2(
+					elm$core$Maybe$withDefault,
+					'1',
+					A2(
+						elm$core$Maybe$map,
+						myrho$elm_round$Round$increaseNum,
+						elm$core$String$uncons(
+							elm$core$String$reverse(remains))))) : remains;
+			var numLen = elm$core$String$length(num);
+			var numZeroed = (num === '0') ? num : ((s <= 0) ? _Utils_ap(
+				num,
+				A2(
+					elm$core$String$repeat,
+					elm$core$Basics$abs(s),
+					'0')) : ((_Utils_cmp(
+				s,
+				elm$core$String$length(after)) < 0) ? (A3(elm$core$String$slice, 0, numLen - s, num) + ('.' + A3(elm$core$String$slice, numLen - s, numLen, num))) : _Utils_ap(
+				before + '.',
+				A3(
+					elm$core$String$padRight,
+					s,
+					_Utils_chr('0'),
+					after))));
+			return A2(myrho$elm_round$Round$addSign, signed, numZeroed);
+		}
+	});
+var myrho$elm_round$Round$round = myrho$elm_round$Round$roundFun(
+	F2(
+		function (signed, str) {
+			var _n0 = elm$core$String$uncons(str);
+			if (_n0.$ === 'Nothing') {
+				return false;
+			} else {
+				if ('5' === _n0.a.a.valueOf()) {
+					if (_n0.a.b === '') {
+						var _n1 = _n0.a;
+						return !signed;
+					} else {
+						var _n2 = _n0.a;
+						return true;
+					}
+				} else {
+					var _n3 = _n0.a;
+					var _int = _n3.a;
+					return function (i) {
+						return ((i > 53) && signed) || ((i >= 53) && (!signed));
+					}(
+						elm$core$Char$toCode(_int));
+				}
+			}
+		}));
+var cuducos$elm_format_number$Helpers$parse = F2(
+	function (locale, original) {
+		var parts = A2(
+			elm$core$String$split,
+			'.',
+			A2(myrho$elm_round$Round$round, locale.decimals, original));
+		var integers = cuducos$elm_format_number$Helpers$splitThousands(
+			A2(
+				elm$core$String$filter,
+				elm$core$Char$isDigit,
+				A2(
+					elm$core$Maybe$withDefault,
+					'0',
+					elm$core$List$head(parts))));
+		var decimals = elm$core$List$head(
+			A2(elm$core$List$drop, 1, parts));
+		var partial = A5(cuducos$elm_format_number$Helpers$FormattedNumber, original, integers, decimals, '', '');
+		var _n0 = cuducos$elm_format_number$Helpers$classify(partial);
+		switch (_n0.$) {
+			case 'Negative':
+				return _Utils_update(
+					partial,
+					{prefix: locale.negativePrefix, suffix: locale.negativeSuffix});
+			case 'Positive':
+				return _Utils_update(
+					partial,
+					{prefix: locale.positivePrefix, suffix: locale.positiveSuffix});
+			default:
+				return partial;
+		}
+	});
+var cuducos$elm_format_number$Helpers$stringfy = F2(
+	function (locale, formatted) {
+		var integers = A2(elm$core$String$join, locale.thousandSeparator, formatted.integers);
+		var decimals = function () {
+			var _n0 = formatted.decimals;
+			if (_n0.$ === 'Just') {
+				var digits = _n0.a;
+				return _Utils_ap(locale.decimalSeparator, digits);
+			} else {
+				return '';
+			}
+		}();
+		return elm$core$String$concat(
+			_List_fromArray(
+				[formatted.prefix, integers, decimals, formatted.suffix]));
+	});
+var cuducos$elm_format_number$FormatNumber$format = F2(
+	function (locale, number_) {
+		return A2(
+			cuducos$elm_format_number$Helpers$stringfy,
+			locale,
+			A2(cuducos$elm_format_number$Helpers$parse, locale, number_));
+	});
+var cuducos$elm_format_number$FormatNumber$Locales$Locale = F7(
+	function (decimals, thousandSeparator, decimalSeparator, negativePrefix, negativeSuffix, positivePrefix, positiveSuffix) {
+		return {decimalSeparator: decimalSeparator, decimals: decimals, negativePrefix: negativePrefix, negativeSuffix: negativeSuffix, positivePrefix: positivePrefix, positiveSuffix: positiveSuffix, thousandSeparator: thousandSeparator};
+	});
+var elm$core$String$toFloat = _String_toFloat;
 var elm$json$Json$Decode$succeed = _Json_succeed;
 var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	switch (handler.$) {
@@ -6588,40 +7036,132 @@ var elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 var elm$html$Html$div = _VirtualDom_node('div');
 var elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var elm$html$Html$text = elm$virtual_dom$VirtualDom$text;
+var elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			elm$json$Json$Encode$string(string));
+	});
+var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
 var author$project$Main$authorizedView = F2(
 	function (model, token) {
+		var percentageLocale = A7(cuducos$elm_format_number$FormatNumber$Locales$Locale, 1, '.', ',', '-', '', '+', '');
+		var gainLocale = A7(cuducos$elm_format_number$FormatNumber$Locales$Locale, 2, '.', ',', '− R$ ', '', '+ R$ ', '');
+		var amountLocale = A7(cuducos$elm_format_number$FormatNumber$Locales$Locale, 2, '.', ',', '−', '', '', '');
 		return A2(
 			elm$html$Html$div,
-			_List_Nil,
+			_List_fromArray(
+				[
+					elm$html$Html$Attributes$class('text-grey-lighter text-center')
+				]),
 			_List_fromArray(
 				[
 					A2(
 					elm$html$Html$div,
-					_List_Nil,
 					_List_fromArray(
 						[
-							elm$html$Html$text(model.summary.name)
+							elm$html$Html$Attributes$class('text-grey-light')
+						]),
+					_List_fromArray(
+						[
+							elm$html$Html$text('Minha carteira')
 						])),
 					A2(
 					elm$html$Html$div,
-					_List_Nil,
 					_List_fromArray(
 						[
-							elm$html$Html$text(model.summary.amount)
+							elm$html$Html$Attributes$class('text-4xl font-semibold')
+						]),
+					_List_fromArray(
+						[
+							function () {
+							var _n0 = elm$core$String$toFloat(model.summary.amount);
+							if (_n0.$ === 'Just') {
+								var amount = _n0.a;
+								return A2(
+									elm$html$Html$div,
+									_List_Nil,
+									_List_fromArray(
+										[
+											elm$html$Html$text(
+											'R$ ' + A2(cuducos$elm_format_number$FormatNumber$format, amountLocale, amount))
+										]));
+							} else {
+								return A2(
+									elm$html$Html$div,
+									_List_Nil,
+									_List_fromArray(
+										[
+											elm$html$Html$text('R$ -,--')
+										]));
+							}
+						}()
 						])),
 					A2(
 					elm$html$Html$div,
-					_List_Nil,
 					_List_fromArray(
 						[
-							elm$html$Html$text(model.summary.gains)
-						])),
-					A2(
-					elm$html$Html$div,
-					_List_Nil,
+							elm$html$Html$Attributes$class('flex justify-between')
+						]),
 					_List_fromArray(
 						[
-							elm$html$Html$text(model.summary.percentage)
+							function () {
+							var _n1 = elm$core$String$toFloat(model.summary.percentage);
+							if (_n1.$ === 'Just') {
+								var percentage = _n1.a;
+								var formattedPercentage = A2(cuducos$elm_format_number$FormatNumber$format, percentageLocale, percentage * 100) + '%';
+								return (percentage > 0) ? A2(
+									elm$html$Html$div,
+									_List_fromArray(
+										[
+											elm$html$Html$Attributes$class('text-green')
+										]),
+									_List_fromArray(
+										[
+											elm$html$Html$text(formattedPercentage)
+										])) : A2(
+									elm$html$Html$div,
+									_List_fromArray(
+										[
+											elm$html$Html$Attributes$class('text-red-light')
+										]),
+									_List_fromArray(
+										[
+											elm$html$Html$text(formattedPercentage)
+										]));
+							} else {
+								return A2(
+									elm$html$Html$div,
+									_List_Nil,
+									_List_fromArray(
+										[
+											elm$html$Html$text('-,- %')
+										]));
+							}
+						}(),
+							function () {
+							var _n2 = elm$core$String$toFloat(model.summary.gains);
+							if (_n2.$ === 'Just') {
+								var gains = _n2.a;
+								return A2(
+									elm$html$Html$div,
+									_List_Nil,
+									_List_fromArray(
+										[
+											elm$html$Html$text(
+											A2(cuducos$elm_format_number$FormatNumber$format, gainLocale, gains))
+										]));
+							} else {
+								return A2(
+									elm$html$Html$div,
+									_List_Nil,
+									_List_fromArray(
+										[
+											elm$html$Html$text('R$ -,--')
+										]));
+							}
+						}()
 						]))
 				]));
 	});
@@ -6634,19 +7174,18 @@ var author$project$Main$PasswordInputChanged = function (a) {
 };
 var elm$html$Html$button = _VirtualDom_node('button');
 var elm$html$Html$form = _VirtualDom_node('form');
+var elm$html$Html$img = _VirtualDom_node('img');
 var elm$html$Html$input = _VirtualDom_node('input');
 var elm$html$Html$label = _VirtualDom_node('label');
-var elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			elm$json$Json$Encode$string(string));
-	});
-var elm$html$Html$Attributes$class = elm$html$Html$Attributes$stringProperty('className');
 var elm$html$Html$Attributes$for = elm$html$Html$Attributes$stringProperty('htmlFor');
 var elm$html$Html$Attributes$id = elm$html$Html$Attributes$stringProperty('id');
 var elm$html$Html$Attributes$placeholder = elm$html$Html$Attributes$stringProperty('placeholder');
+var elm$html$Html$Attributes$src = function (url) {
+	return A2(
+		elm$html$Html$Attributes$stringProperty,
+		'src',
+		_VirtualDom_noJavaScriptOrHtmlUri(url));
+};
 var elm$html$Html$Attributes$type_ = elm$html$Html$Attributes$stringProperty('type');
 var elm$html$Html$Attributes$value = elm$html$Html$Attributes$stringProperty('value');
 var elm$html$Html$Events$alwaysStop = function (x) {
@@ -6705,106 +7244,115 @@ var elm$html$Html$Events$onSubmit = function (msg) {
 };
 var author$project$Main$guestView = function (model) {
 	return A2(
-		elm$html$Html$form,
+		elm$html$Html$div,
 		_List_fromArray(
 			[
-				elm$html$Html$Events$onSubmit(author$project$Main$DispatchLogin),
-				elm$html$Html$Attributes$class('w-full max-w-xs px-4 py-8')
+				elm$html$Html$Attributes$class('flex flex-col items-center justify-center')
 			]),
 		_List_fromArray(
 			[
 				A2(
-				elm$html$Html$div,
+				elm$html$Html$img,
 				_List_fromArray(
 					[
-						elm$html$Html$Attributes$class('mb-4')
+						elm$html$Html$Attributes$src('images/logo.svg')
+					]),
+				_List_Nil),
+				A2(
+				elm$html$Html$form,
+				_List_fromArray(
+					[
+						elm$html$Html$Events$onSubmit(author$project$Main$DispatchLogin),
+						elm$html$Html$Attributes$class('w-full max-w-xs px-4 py-8')
 					]),
 				_List_fromArray(
 					[
 						A2(
-						elm$html$Html$label,
+						elm$html$Html$div,
 						_List_fromArray(
 							[
-								elm$html$Html$Attributes$class('block text-grey text-xs font-bold mb-1'),
-								elm$html$Html$Attributes$for('email')
+								elm$html$Html$Attributes$class('mb-4')
 							]),
 						_List_fromArray(
 							[
-								elm$html$Html$text('Email')
+								A2(
+								elm$html$Html$label,
+								_List_fromArray(
+									[
+										elm$html$Html$Attributes$class('block text-grey text-xs font-bold mb-1'),
+										elm$html$Html$Attributes$for('email')
+									]),
+								_List_fromArray(
+									[
+										elm$html$Html$text('Email')
+									])),
+								A2(
+								elm$html$Html$input,
+								_List_fromArray(
+									[
+										elm$html$Html$Events$onInput(author$project$Main$EmailInputChanged),
+										elm$html$Html$Attributes$value(model.emailInput),
+										elm$html$Html$Attributes$class('shadow appearance-none bg-grey-darkest rounded w-full py-2 px-3 text-grey-dark leading-tight focus:outline-none focus:shadow-outline'),
+										elm$html$Html$Attributes$id('email'),
+										elm$html$Html$Attributes$placeholder('Digite seu email'),
+										elm$html$Html$Attributes$type_('text')
+									]),
+								_List_Nil)
 							])),
 						A2(
-						elm$html$Html$input,
+						elm$html$Html$div,
 						_List_fromArray(
 							[
-								elm$html$Html$Events$onInput(author$project$Main$EmailInputChanged),
-								elm$html$Html$Attributes$value(model.emailInput),
-								elm$html$Html$Attributes$class('shadow appearance-none bg-grey-darkest rounded w-full py-2 px-3 text-grey-dark leading-tight focus:outline-none focus:shadow-outline'),
-								elm$html$Html$Attributes$id('email'),
-								elm$html$Html$Attributes$placeholder('Digite seu email'),
-								elm$html$Html$Attributes$type_('text')
-							]),
-						_List_Nil)
-					])),
-				A2(
-				elm$html$Html$div,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$class('mb-8')
-					]),
-				_List_fromArray(
-					[
-						A2(
-						elm$html$Html$label,
-						_List_fromArray(
-							[
-								elm$html$Html$Attributes$class('block text-grey text-xs font-bold mb-1'),
-								elm$html$Html$Attributes$for('password')
+								elm$html$Html$Attributes$class('mb-8')
 							]),
 						_List_fromArray(
 							[
-								elm$html$Html$text('Senha')
+								A2(
+								elm$html$Html$label,
+								_List_fromArray(
+									[
+										elm$html$Html$Attributes$class('block text-grey text-xs font-bold mb-1'),
+										elm$html$Html$Attributes$for('password')
+									]),
+								_List_fromArray(
+									[
+										elm$html$Html$text('Senha')
+									])),
+								A2(
+								elm$html$Html$input,
+								_List_fromArray(
+									[
+										elm$html$Html$Events$onInput(author$project$Main$PasswordInputChanged),
+										elm$html$Html$Attributes$value(model.passwordInput),
+										elm$html$Html$Attributes$class('shadow appearance-none bg-grey-darkest rounded w-full py-2 px-3 text-grey-dark leading-tight focus:outline-none focus:shadow-outline'),
+										elm$html$Html$Attributes$id('password'),
+										elm$html$Html$Attributes$placeholder('Digite sua senha'),
+										elm$html$Html$Attributes$type_('password')
+									]),
+								_List_Nil)
 							])),
 						A2(
-						elm$html$Html$input,
+						elm$html$Html$div,
 						_List_fromArray(
 							[
-								elm$html$Html$Events$onInput(author$project$Main$PasswordInputChanged),
-								elm$html$Html$Attributes$value(model.passwordInput),
-								elm$html$Html$Attributes$class('shadow appearance-none bg-grey-darkest rounded w-full py-2 px-3 text-grey-dark leading-tight focus:outline-none focus:shadow-outline'),
-								elm$html$Html$Attributes$id('password'),
-								elm$html$Html$Attributes$placeholder('Digite sua senha'),
-								elm$html$Html$Attributes$type_('password')
-							]),
-						_List_Nil)
-					])),
-				A2(
-				elm$html$Html$div,
-				_List_fromArray(
-					[
-						elm$html$Html$Attributes$class('flex items-center justify-between')
-					]),
-				_List_fromArray(
-					[
-						A2(
-						elm$html$Html$button,
-						_List_fromArray(
-							[
-								elm$html$Html$Attributes$class('w-full bg-blue hover:bg-blue-dark text-white font-semibold py-4 px-4 rounded-sm focus:outline-none focus:shadow-outline'),
-								elm$html$Html$Attributes$type_('submit')
+								elm$html$Html$Attributes$class('flex items-center justify-between')
 							]),
 						_List_fromArray(
 							[
-								elm$html$Html$text('Login')
+								A2(
+								elm$html$Html$button,
+								_List_fromArray(
+									[
+										elm$html$Html$Attributes$class('w-full bg-blue hover:bg-blue-dark text-white font-semibold py-4 px-4 rounded-sm focus:outline-none focus:shadow-outline'),
+										elm$html$Html$Attributes$type_('submit')
+									]),
+								_List_fromArray(
+									[
+										elm$html$Html$text('Login')
+									]))
 							]))
 					]))
 			]));
-};
-var elm$html$Html$img = _VirtualDom_node('img');
-var elm$html$Html$Attributes$src = function (url) {
-	return A2(
-		elm$html$Html$Attributes$stringProperty,
-		'src',
-		_VirtualDom_noJavaScriptOrHtmlUri(url));
 };
 var author$project$Main$view = function (model) {
 	return {
@@ -6818,13 +7366,6 @@ var author$project$Main$view = function (model) {
 					]),
 				_List_fromArray(
 					[
-						A2(
-						elm$html$Html$img,
-						_List_fromArray(
-							[
-								elm$html$Html$Attributes$src('images/logo.svg')
-							]),
-						_List_Nil),
 						function () {
 						var _n0 = model.page;
 						if (_n0.$ === 'Guest') {
@@ -7674,22 +8215,9 @@ var elm$browser$Debugger$Expando$seqTypeToString = F2(
 				return 'Array(' + (elm$core$String$fromInt(n) + ')');
 		}
 	});
-var elm$core$String$slice = _String_slice;
 var elm$core$String$left = F2(
 	function (n, string) {
 		return (n < 1) ? '' : A3(elm$core$String$slice, 0, n, string);
-	});
-var elm$core$String$length = _String_length;
-var elm$core$Basics$negate = function (n) {
-	return -n;
-};
-var elm$core$String$right = F2(
-	function (n, string) {
-		return (n < 1) ? '' : A3(
-			elm$core$String$slice,
-			-n,
-			elm$core$String$length(string),
-			string);
 	});
 var elm$browser$Debugger$Expando$elideMiddle = function (str) {
 	return (elm$core$String$length(str) <= 18) ? str : (A2(elm$core$String$left, 8, str) + ('...' + A2(elm$core$String$right, 8, str)));
@@ -7752,15 +8280,6 @@ var elm$core$Dict$isEmpty = function (dict) {
 		return false;
 	}
 };
-var elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
 var elm$browser$Debugger$Expando$viewExtraTiny = function (value) {
 	if (value.$ === 'Record') {
 		var record = value.b;
@@ -8928,14 +9447,6 @@ var elm$core$Dict$values = function (dict) {
 		_List_Nil,
 		dict);
 };
-var elm$core$List$append = F2(
-	function (xs, ys) {
-		if (!ys.b) {
-			return xs;
-		} else {
-			return A3(elm$core$List$foldr, elm$core$List$cons, ys, xs);
-		}
-	});
 var elm$core$List$concat = function (lists) {
 	return A3(elm$core$List$foldr, elm$core$List$append, _List_Nil, lists);
 };
@@ -9181,7 +9692,6 @@ var elm$browser$Debugger$Expando$updateIndex = F3(
 				A3(elm$browser$Debugger$Expando$updateIndex, n - 1, func, xs));
 		}
 	});
-var elm$core$Basics$not = _Basics_not;
 var elm$browser$Debugger$Expando$update = F2(
 	function (msg, value) {
 		switch (value.$) {
@@ -9387,8 +9897,6 @@ var elm$browser$Debugger$History$addRecent = F3(
 	});
 var elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
 var elm$core$Array$bitMask = 4294967295 >>> (32 - elm$core$Array$shiftStep);
-var elm$core$Basics$ge = _Utils_ge;
-var elm$core$Bitwise$and = _Bitwise_and;
 var elm$core$Elm$JsArray$push = _JsArray_push;
 var elm$core$Elm$JsArray$singleton = _JsArray_singleton;
 var elm$core$Elm$JsArray$unsafeGet = _JsArray_unsafeGet;
@@ -9985,7 +10493,6 @@ var elm$browser$Debugger$Report$MessageChanged = F2(
 var elm$browser$Debugger$Report$SomethingChanged = function (a) {
 	return {$: 'SomethingChanged', a: a};
 };
-var elm$core$Basics$neq = _Utils_notEqual;
 var elm$browser$Debugger$Metadata$checkTypes = F2(
 	function (old, _new) {
 		return (!_Utils_eq(old.message, _new.message)) ? A2(elm$browser$Debugger$Report$MessageChanged, old.message, _new.message) : elm$browser$Debugger$Report$SomethingChanged(
@@ -10334,22 +10841,12 @@ var elm$core$Set$foldr = F3(
 			initialState,
 			dict);
 	});
-var elm$core$String$dropLeft = F2(
-	function (n, string) {
-		return (n < 1) ? string : A3(
-			elm$core$String$slice,
-			n,
-			elm$core$String$length(string),
-			string);
-	});
-var elm$core$String$startsWith = _String_startsWith;
 var elm$url$Url$Http = {$: 'Http'};
 var elm$url$Url$Https = {$: 'Https'};
 var elm$core$String$indexes = _String_indexes;
 var elm$core$String$isEmpty = function (string) {
 	return string === '';
 };
-var elm$core$String$toInt = _String_toInt;
 var elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
 		return {fragment: fragment, host: host, path: path, port_: port_, protocol: protocol, query: query};

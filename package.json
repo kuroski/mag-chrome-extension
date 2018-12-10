@@ -4,22 +4,27 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "elm-live src/Main.elm --dir=public -- --debug --output=public/magnetis.js",
-    "serve": "nodemon backend/index-rest.js"
+    "heroku-postbuild": "npm run build",
+    "start": "concurrently \"elm-app start\" \"npm run start:server\"",
+    "start:server": "nodemon backend/index-rest.js",
+    "build": "elm-app build",
+    "test": "elm-app test"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "elm-live": "^3.2.3"
+    "create-elm-app": "^2.2.3"
   },
   "dependencies": {
     "apicache": "^1.2.3",
     "axios": "^0.18.0",
     "body-parser": "^1.18.3",
+    "concurrently": "^4.1.0",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "graphql-yoga": "^1.16.7",
     "helmet": "^3.15.0",
-    "nodemon": "^1.18.7"
+    "nodemon": "^1.18.7",
+    "store": "^2.0.12"
   }
 }
