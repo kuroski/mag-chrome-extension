@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "heroku-postbuild": "npm run build",
-    "start": "concurrently \"elm-app start\" \"npm run start:server\"",
+    "start": "concurrently \"npm run start:elm\" \"npm run start:server\"",
     "start:server": "nodemon backend/index-rest.js",
+    "start:elm": "elm-app start",
     "build": "elm-app build",
     "test": "elm-app test"
   },

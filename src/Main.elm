@@ -61,6 +61,7 @@ type alias Model =
     , passwordInput : String
     , summary : Summary
     , serverUrl : String
+    , reminderDay : Maybe Int
     }
 
 
@@ -73,8 +74,12 @@ init flags =
               , passwordInput = ""
               , summary = Summary "" "" "" ""
               , serverUrl = flags.serverUrl
+              , reminderDay = Nothing
               }
-            , userSummary flags.serverUrl credentials.token credentials.id
+            , Cmd.batch
+                [ userSummary flags.serverUrl credentials.token credentials.id
+                , userInformation flags.serverUrl credentials.token credentials.id
+                ]
             )
 
         _ ->
@@ -83,6 +88,7 @@ init flags =
               , passwordInput = ""
               , summary = Summary "" "" "" ""
               , serverUrl = flags.serverUrl
+              , reminderDay = Nothing
               }
             , Cmd.none
             )
@@ -124,6 +130,11 @@ userSummaryDecoder =
         (Decoder.field "percentage" Decoder.string)
 
 
+additionalReminderDecoder : Decoder.Decoder Int
+additionalReminderDecoder =
+    Decoder.at [ "configuration", "additional_reminder_day" ] Decoder.int
+
+
 userLogin : String -> String -> String -> Cmd Msg
 userLogin serverUrl email password =
     let
@@ -153,6 +164,22 @@ userSummary serverUrl token userId =
         }
 
 
+userInformation : String -> String -> String -> Cmd Msg
+userInformation serverUrl token userId =
+    Http.request
+        { method = "GET"
+        , headers =
+            [ Http.header "Accept" "application/json"
+            , Http.header "Authorization" ("Bearer " ++ token)
+            ]
+        , url = serverUrl ++ "/api/users_informations/" ++ userId
+        , body = Http.emptyBody
+        , expect = Http.expectJson GotAdditionalReminder additionalReminderDecoder
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
 
 -- UPDATE
 
@@ -163,6 +190,7 @@ type Msg
     | DispatchLogin
     | GotAuthentication (Result Http.Error Credentials)
     | GotUserSummary (Result Http.Error Summary)
+    | GotAdditionalReminder (Result Http.Error Int)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -181,6 +209,7 @@ update msg model =
             ( { model | page = Authorized data }
             , Cmd.batch
                 [ userSummary model.serverUrl data.token data.id
+                , userInformation model.serverUrl data.token data.id
                 , setLocalstorage (authenticationEncoder <| Credentials data.token data.id)
                 ]
             )
@@ -193,6 +222,12 @@ update msg model =
 
         GotUserSummary (Err _) ->
             ( { model | page = Guest }, removeLocalstorage () )
+
+        GotAdditionalReminder (Ok data) ->
+            ( { model | reminderDay = Just data }, Cmd.none )
+
+        GotAdditionalReminder (Err _) ->
+            ( { model | reminderDay = Nothing }, removeLocalstorage () )
 
 
 
@@ -313,5 +348,14 @@ authorizedView model token =
 
                 _ ->
                     div [] [ text "R$ -,--" ]
+            ]
+        , div [ class "text-center mt-4" ]
+            [ text <|
+                case model.reminderDay of
+                    Just reminderDay ->
+                        "Lembrete, dia " ++ String.fromInt reminderDay
+
+                    Nothing ->
+                        "Por favor, crie um lembrete"
             ]
         ]

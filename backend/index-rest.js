@@ -40,6 +40,23 @@ app.get("/api/portfolio_summary/:id", async (req, res, next) => {
   }
 });
 
+app.get("/api/users_informations/:id", async (req, res, next) => {
+  try {
+    const result = await instance
+      .get(`api/v1/users_informations/${req.params.id}`, {
+        headers: {
+          Authorization: req.headers.authorization || "",
+          Accept: req.headers.accept || "application/json"
+        }
+      })
+      .then(({ data }) => data);
+    res.status(200).send(result);
+  } catch (e) {
+    console.error(e)
+    next(e);
+  }
+});
+
 app.post("/api/v1/users/tokens", async (req, res, next) => {
   try {
     const { email, password } = req.body;
