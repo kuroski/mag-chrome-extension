@@ -1,15 +1,18 @@
 module Main exposing (Msg(..), main)
 
 import Browser exposing (Document, document)
+import Date exposing (Date, Unit(..), fromCalendarDate, fromOrdinalDate, month, toIsoString, year)
 import FormatNumber exposing (format)
 import FormatNumber.Locales exposing (Locale)
-import Html exposing (Html, a, br, button, div, form, h2, img, input, label, p, text)
-import Html.Attributes exposing (class, for, href, id, placeholder, src, type_, value)
+import Html exposing (Html, a, br, button, div, form, h2, img, input, label, p, span, text)
+import Html.Attributes exposing (class, for, href, id, placeholder, src, type_, value, width)
 import Html.Events exposing (onInput, onSubmit)
 import Http
 import Json.Decode as Decoder
 import Json.Encode as Encode
 import Storage exposing (removeLocalstorage, setLocalstorage)
+import Task exposing (Task)
+import Time exposing (Month(..))
 
 
 
@@ -62,6 +65,7 @@ type alias Model =
     , summary : Summary
     , serverUrl : String
     , reminderDay : Maybe Int
+    , today : Maybe Date
     }
 
 
@@ -75,10 +79,12 @@ init flags =
               , summary = Summary "" "" "" ""
               , serverUrl = flags.serverUrl
               , reminderDay = Nothing
+              , today = Nothing
               }
             , Cmd.batch
                 [ userSummary flags.serverUrl credentials.token credentials.id
                 , userInformation flags.serverUrl credentials.token credentials.id
+                , Task.perform GotToday Date.today
                 ]
             )
 
@@ -89,6 +95,7 @@ init flags =
               , summary = Summary "" "" "" ""
               , serverUrl = flags.serverUrl
               , reminderDay = Nothing
+              , today = Nothing
               }
             , Cmd.none
             )
@@ -191,6 +198,7 @@ type Msg
     | GotAuthentication (Result Http.Error Credentials)
     | GotUserSummary (Result Http.Error Summary)
     | GotAdditionalReminder (Result Http.Error Int)
+    | GotToday Date
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -228,6 +236,9 @@ update msg model =
 
         GotAdditionalReminder (Err _) ->
             ( { model | reminderDay = Nothing }, removeLocalstorage () )
+
+        GotToday date ->
+            ( { model | today = Just date }, Cmd.none )
 
 
 
@@ -350,12 +361,110 @@ authorizedView model token =
                     div [] [ text "R$ -,--" ]
             ]
         , div [ class "text-center mt-4" ]
-            [ text <|
-                case model.reminderDay of
-                    Just reminderDay ->
-                        "Lembrete, dia " ++ String.fromInt reminderDay
-
-                    Nothing ->
-                        "Por favor, crie um lembrete"
+            [ remainingDaysToInvestmentView model
             ]
         ]
+
+
+remainingDaysToInvestmentView : Model -> Html Msg
+remainingDaysToInvestmentView model =
+    case ( model.today, model.reminderDay ) of
+        ( Just today, Just reminderDay ) ->
+            let
+                lastReminder =
+                    fromCalendarDate (year today) (month today) reminderDay
+
+                lastReminderDiff =
+                    Date.diff Days today lastReminder
+
+                nextReminder =
+                    Date.add Months 1 lastReminder
+
+                nextReminderDiff =
+                    Date.diff Days today nextReminder
+            in
+            div [ class "text-xs mb-2" ]
+                [ if lastReminderDiff < 0 then
+                    div [ class "flex flex-col" ]
+                        [ reminderView model.reminderDay (Date.month nextReminder)
+                        , span [ class "font-semibold" ]
+                            [ text <| String.fromInt nextReminderDiff ++ " dias"
+                            ]
+                        , span []
+                            [ text "até sua nova aplicação"
+                            ]
+                        ]
+
+                  else
+                    div []
+                        [ reminderView model.reminderDay (Date.month lastReminder)
+                        , span [ class "font-semibold" ]
+                            [ text <| String.fromInt lastReminderDiff ++ " dias"
+                            ]
+                        , span []
+                            [ text "até sua nova aplicação"
+                            ]
+                        ]
+                ]
+
+        _ ->
+            span [] []
+
+
+reminderView : Maybe Int -> Date.Month -> Html Msg
+reminderView maybeReminderDay month =
+    case maybeReminderDay of
+        Just reminderDay ->
+            div
+                [ class "relative flex justify-center items-center mb-2" ]
+                [ div [ class "absolute pin flex flex-col justify-center items-center text-xs font-medium mt-3" ]
+                    [ span []
+                        [ text <| toPortugueseMonth month
+                        ]
+                    , span [] [ text <| String.fromInt reminderDay ]
+                    ]
+                , img [ width 46, src "images/calendar.svg" ] []
+                ]
+
+        Nothing ->
+            span [] [ text "Nenhum lembrete configurado" ]
+
+
+toPortugueseMonth : Date.Month -> String
+toPortugueseMonth month =
+    case month of
+        Jan ->
+            "Jan"
+
+        Feb ->
+            "Fev"
+
+        Mar ->
+            "Mar"
+
+        Apr ->
+            "Abr"
+
+        May ->
+            "Mai"
+
+        Jun ->
+            "Jun"
+
+        Jul ->
+            "Jul"
+
+        Aug ->
+            "Ago"
+
+        Sep ->
+            "Set"
+
+        Oct ->
+            "Out"
+
+        Nov ->
+            "Nov"
+
+        Dec ->
+            "Dez"
