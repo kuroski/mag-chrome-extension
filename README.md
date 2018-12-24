@@ -5,6 +5,26 @@ This project is bootstrapped with [Create Elm App](https://github.com/halfzebra/
 Below you will find some information on how to perform basic tasks.
 You can find the most recent version of this guide [here](https://github.com/halfzebra/create-elm-app/blob/master/template/README.md).
 
+## Chrome extension config
+
+```
+{
+  "name": "Magnetis Summary",
+  "short_name": "Magnetis Summary",
+  "version": "1.0",
+  "description": "Build an Extension!",
+  "manifest_version": 2,
+  "browser_action": {
+    "default_popup": "index.html"
+  },
+  "permissions": ["activeTab"],
+  "icons": {
+    "72": "images/icons/icon-72x72.png",
+    "96": "images/icons/icon-96x96.png"
+  }
+}
+```
+
 ## Table of Contents
 
 - [Sending feedback](#sending-feedback)

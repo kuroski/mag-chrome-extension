@@ -1,6 +1,7 @@
 module Main exposing (Msg(..), main)
 
 import Browser exposing (Document, document)
+import Chrome exposing (setBadge)
 import Date exposing (Date, Unit(..), fromCalendarDate, fromOrdinalDate, month, toIsoString, year)
 import FormatNumber exposing (format)
 import FormatNumber.Locales exposing (Locale)
@@ -105,6 +106,13 @@ init flags =
 
 
 -- API
+
+
+badgeEncoder : Int -> Encode.Value
+badgeEncoder remainingDays =
+    Encode.object
+        [ ( "days", Encode.int remainingDays )
+        ]
 
 
 loginEncoder : String -> String -> Encode.Value
@@ -256,10 +264,14 @@ update msg model =
                             Date.diff Days today nextReminder
                     in
                     if lastReminderDiff < 0 then
-                        ( { model | nextInvestmentDay = nextReminderDiff, nextInvestmentMonth = Just (Date.month nextReminder) }, Cmd.none )
+                        ( { model | nextInvestmentDay = nextReminderDiff, nextInvestmentMonth = Just (Date.month nextReminder) }
+                        , setBadge (badgeEncoder <| nextReminderDiff)
+                        )
 
                     else
-                        ( { model | nextInvestmentDay = lastReminderDiff, nextInvestmentMonth = Just (Date.month lastReminder) }, Cmd.none )
+                        ( { model | nextInvestmentDay = lastReminderDiff, nextInvestmentMonth = Just (Date.month lastReminder) }
+                        , setBadge (badgeEncoder <| lastReminderDiff)
+                        )
 
                 _ ->
                     ( model, Cmd.none )

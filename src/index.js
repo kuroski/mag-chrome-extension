@@ -28,5 +28,12 @@ document.addEventListener("DOMContentLoaded", () => {
     store.clearAll();
   });
 
+  app.ports.setBadge.subscribe(({ days = 0 }) => {
+    if (!chrome || !chrome.browserAction) return;
+    chrome.browserAction.setBadgeText({
+      text: days.toString()
+    });
+  });
+
   registerServiceWorker();
 });
