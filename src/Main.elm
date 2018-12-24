@@ -65,7 +65,8 @@ type alias Model =
     , summary : Summary
     , serverUrl : String
     , reminderDay : Maybe Int
-    , today : Maybe Date
+    , nextInvestmentDay : Int
+    , nextInvestmentMonth : Maybe Date.Month
     }
 
 
@@ -79,12 +80,12 @@ init flags =
               , summary = Summary "" "" "" ""
               , serverUrl = flags.serverUrl
               , reminderDay = Nothing
-              , today = Nothing
+              , nextInvestmentDay = 0
+              , nextInvestmentMonth = Nothing
               }
             , Cmd.batch
                 [ userSummary flags.serverUrl credentials.token credentials.id
                 , userInformation flags.serverUrl credentials.token credentials.id
-                , Task.perform GotToday Date.today
                 ]
             )
 
@@ -95,7 +96,8 @@ init flags =
               , summary = Summary "" "" "" ""
               , serverUrl = flags.serverUrl
               , reminderDay = Nothing
-              , today = Nothing
+              , nextInvestmentDay = 0
+              , nextInvestmentMonth = Nothing
               }
             , Cmd.none
             )
@@ -232,13 +234,35 @@ update msg model =
             ( { model | page = Guest }, removeLocalstorage () )
 
         GotAdditionalReminder (Ok data) ->
-            ( { model | reminderDay = Just data }, Cmd.none )
+            ( { model | reminderDay = Just data }, Task.perform GotToday Date.today )
 
         GotAdditionalReminder (Err _) ->
             ( { model | reminderDay = Nothing }, removeLocalstorage () )
 
         GotToday date ->
-            ( { model | today = Just date }, Cmd.none )
+            case ( Just date, model.reminderDay ) of
+                ( Just today, Just reminderDay ) ->
+                    let
+                        lastReminder =
+                            fromCalendarDate (year today) (month today) reminderDay
+
+                        lastReminderDiff =
+                            Date.diff Days today lastReminder
+
+                        nextReminder =
+                            Date.add Months 1 lastReminder
+
+                        nextReminderDiff =
+                            Date.diff Days today nextReminder
+                    in
+                    if lastReminderDiff < 0 then
+                        ( { model | nextInvestmentDay = nextReminderDiff, nextInvestmentMonth = Just (Date.month nextReminder) }, Cmd.none )
+
+                    else
+                        ( { model | nextInvestmentDay = lastReminderDiff, nextInvestmentMonth = Just (Date.month lastReminder) }, Cmd.none )
+
+                _ ->
+                    ( model, Cmd.none )
 
 
 
@@ -368,53 +392,28 @@ authorizedView model token =
 
 remainingDaysToInvestmentView : Model -> Html Msg
 remainingDaysToInvestmentView model =
-    case ( model.today, model.reminderDay ) of
-        ( Just today, Just reminderDay ) ->
-            let
-                lastReminder =
-                    fromCalendarDate (year today) (month today) reminderDay
-
-                lastReminderDiff =
-                    Date.diff Days today lastReminder
-
-                nextReminder =
-                    Date.add Months 1 lastReminder
-
-                nextReminderDiff =
-                    Date.diff Days today nextReminder
-            in
+    case model.reminderDay of
+        Just reminderDay ->
             div [ class "text-xs mb-2" ]
-                [ if lastReminderDiff < 0 then
-                    div [ class "flex flex-col" ]
-                        [ reminderView model.reminderDay (Date.month nextReminder)
-                        , span [ class "font-semibold" ]
-                            [ text <| String.fromInt nextReminderDiff ++ " dias"
-                            ]
-                        , span []
-                            [ text "até sua nova aplicação"
-                            ]
+                [ div [ class "flex flex-col" ]
+                    [ reminderView model.reminderDay model.nextInvestmentMonth
+                    , span [ class "font-semibold" ]
+                        [ text <| String.fromInt model.nextInvestmentDay ++ " dias"
                         ]
-
-                  else
-                    div []
-                        [ reminderView model.reminderDay (Date.month lastReminder)
-                        , span [ class "font-semibold" ]
-                            [ text <| String.fromInt lastReminderDiff ++ " dias"
-                            ]
-                        , span []
-                            [ text "até sua nova aplicação"
-                            ]
+                    , span []
+                        [ text "até sua nova aplicação"
                         ]
+                    ]
                 ]
 
         _ ->
             span [] []
 
 
-reminderView : Maybe Int -> Date.Month -> Html Msg
-reminderView maybeReminderDay month =
-    case maybeReminderDay of
-        Just reminderDay ->
+reminderView : Maybe Int -> Maybe Date.Month -> Html Msg
+reminderView maybeReminderDay maybeMonth =
+    case ( maybeReminderDay, maybeMonth ) of
+        ( Just reminderDay, Just month ) ->
             div
                 [ class "relative flex justify-center items-center mb-2" ]
                 [ div [ class "absolute pin flex flex-col justify-center items-center text-xs font-medium mt-3" ]
@@ -426,7 +425,7 @@ reminderView maybeReminderDay month =
                 , img [ width 46, src "images/calendar.svg" ] []
                 ]
 
-        Nothing ->
+        _ ->
             span [] [ text "Nenhum lembrete configurado" ]
 
 
