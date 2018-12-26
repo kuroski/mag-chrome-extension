@@ -309,7 +309,7 @@ view model =
 guestView : Model -> Html Msg
 guestView model =
     div [ class "flex flex-col items-center justify-center" ]
-        [ img [ src "images/logo.svg" ] []
+        [ img [ class "w-16", src "images/logo.svg" ] []
         , form
             [ onSubmit DispatchLogin
             , class "w-full max-w-xs px-4 py-8"
