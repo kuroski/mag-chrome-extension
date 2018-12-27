@@ -33,6 +33,16 @@ document.addEventListener("DOMContentLoaded", () => {
     chrome.browserAction.setBadgeText({
       text: days.toString()
     });
+
+    const now = new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      new Date().getDate()
+    );
+    if (!store.get("badgeDate") || new Date(store.get("badgeDate")) !== now) {
+      store.set("badgeDate", now.getTime());
+      store.set("badgeDay", days);
+    }
   });
 
   registerServiceWorker();

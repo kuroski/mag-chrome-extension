@@ -8,6 +8,9 @@
     "default_popup": "index.html"
   },
   "permissions": ["activeTab", "notifications"],
+  "background": {
+    "scripts": ["background.js"]
+  },
   "icons": [
     {
       "src": "images/icons/windows10/Square71x71Logo.scale-400.png",
