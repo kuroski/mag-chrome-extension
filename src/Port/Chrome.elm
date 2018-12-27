@@ -1,4 +1,4 @@
-port module Chrome exposing (setBadge)
+port module Port.Chrome exposing (setBadge)
 
 import Json.Encode as Encode
 

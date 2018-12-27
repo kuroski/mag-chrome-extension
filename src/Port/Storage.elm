@@ -1,4 +1,4 @@
-port module Storage exposing (removeLocalstorage, setLocalstorage)
+port module Port.Storage exposing (removeLocalstorage, setLocalstorage)
 
 import Json.Encode as Encode
 
