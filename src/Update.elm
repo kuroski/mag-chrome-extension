@@ -4,7 +4,7 @@ import Date exposing (Date, Unit(..), fromCalendarDate, month, year)
 import Http
 import Json.Decode as Decoder
 import Json.Encode as Encode
-import Model exposing (Credentials, Model, Page(..), Summary)
+import Model exposing (Credentials, Model, Page(..), Reminder, Summary)
 import Port.Chrome exposing (setBadge)
 import Port.Storage exposing (removeLocalstorage, setLocalstorage)
 import Task exposing (Task)
@@ -161,11 +161,11 @@ update msg model =
         GotUserSummary (Err _) ->
             ( { model | page = Guest }, removeLocalstorage () )
 
-        GotAdditionalReminder (Ok data) ->
-            ( { model | reminderDay = Just data }, Task.perform (GotReminderDiff data) Date.today )
+        GotAdditionalReminder (Ok reminderDay) ->
+            ( model, Task.perform (GotReminderDiff reminderDay) Date.today )
 
         GotAdditionalReminder (Err _) ->
-            ( { model | reminderDay = Nothing }, removeLocalstorage () )
+            ( { model | reminder = Nothing }, removeLocalstorage () )
 
         GotReminderDiff reminderDay today ->
             let
@@ -182,11 +182,11 @@ update msg model =
                     Date.diff Days today nextReminder
             in
             if lastReminderDiff < 0 then
-                ( { model | nextInvestmentDay = nextReminderDiff, nextInvestmentMonth = Just (Date.month nextReminder) }
+                ( { model | reminder = Just (Reminder reminderDay nextReminderDiff (Date.month nextReminder)) }
                 , setBadge (badgeEncoder <| nextReminderDiff)
                 )
 
             else
-                ( { model | nextInvestmentDay = lastReminderDiff, nextInvestmentMonth = Just (Date.month lastReminder) }
+                ( { model | reminder = Just (Reminder reminderDay lastReminderDiff (Date.month lastReminder)) }
                 , setBadge (badgeEncoder <| lastReminderDiff)
                 )

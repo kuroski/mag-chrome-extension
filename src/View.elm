@@ -7,7 +7,7 @@ import FormatNumber.Locales exposing (Locale)
 import Html exposing (Html, a, br, button, div, form, h2, img, input, label, p, span, text)
 import Html.Attributes exposing (class, for, href, id, placeholder, src, type_, value, width)
 import Html.Events exposing (onInput, onSubmit)
-import Model exposing (Model, Page(..), Summary)
+import Model exposing (Model, Page(..), Reminder, Summary)
 import Update exposing (Msg(..))
 import View.Helpers exposing (toPortugueseMonth)
 
@@ -79,7 +79,7 @@ authorizedView model token =
     div [ class "text-grey-lighter text-center" ]
         [ summaryView model.summary
         , div [ class "text-center mt-4" ]
-            [ remainingDaysToInvestmentView model
+            [ reminderView model.reminder
             ]
         ]
 
@@ -121,15 +121,25 @@ summaryView maybeSummary =
             div [] [ text "Carregando..." ]
 
 
-remainingDaysToInvestmentView : Model -> Html Msg
-remainingDaysToInvestmentView model =
-    case model.reminderDay of
-        Just reminderDay ->
+reminderView : Maybe Reminder -> Html Msg
+reminderView maybeReminder =
+    case maybeReminder of
+        Just reminder ->
             div [ class "text-xs mb-2" ]
                 [ div [ class "flex flex-col" ]
-                    [ reminderView model.reminderDay model.nextInvestmentMonth
-                    , span [ class "font-semibold" ]
-                        [ text <| String.fromInt model.nextInvestmentDay ++ " dias"
+                    [ div
+                        [ class "relative flex justify-center items-center mb-2" ]
+                        [ div [ class "absolute pin flex flex-col justify-center items-center text-xs font-medium mt-3" ]
+                            [ span []
+                                [ text <| toPortugueseMonth reminder.nextInvestmentMonth
+                                ]
+                            , span [] [ text <| String.fromInt reminder.reminderDay ]
+                            ]
+                        , img [ width 46, src "images/calendar.svg" ] []
+                        ]
+                    , span
+                        [ class "font-semibold" ]
+                        [ text <| String.fromInt reminder.nextInvestmentDay ++ " dias"
                         ]
                     , span []
                         [ text "até sua nova aplicação"
@@ -137,24 +147,5 @@ remainingDaysToInvestmentView model =
                     ]
                 ]
 
-        _ ->
+        Nothing ->
             span [] []
-
-
-reminderView : Maybe Int -> Maybe Date.Month -> Html Msg
-reminderView maybeReminderDay maybeMonth =
-    case ( maybeReminderDay, maybeMonth ) of
-        ( Just reminderDay, Just month ) ->
-            div
-                [ class "relative flex justify-center items-center mb-2" ]
-                [ div [ class "absolute pin flex flex-col justify-center items-center text-xs font-medium mt-3" ]
-                    [ span []
-                        [ text <| toPortugueseMonth month
-                        ]
-                    , span [] [ text <| String.fromInt reminderDay ]
-                    ]
-                , img [ width 46, src "images/calendar.svg" ] []
-                ]
-
-        _ ->
-            span [] [ text "Nenhum lembrete configurado" ]

@@ -1,4 +1,4 @@
-module Model exposing (Credentials, Flags, Model, Page(..), Summary)
+module Model exposing (Credentials, Flags, Model, Page(..), Reminder, Summary)
 
 import Date exposing (Date)
 
@@ -28,15 +28,11 @@ type alias Summary =
     }
 
 
-
-{-
-   type alias ReminderDay =
-       { reminderDay : Int
-       , nextInvestmentDay : Int
-       , nextInvestmentMonth : Date.Month
-       }
--}
--- TODO: Refactor reminder to type alias and put only in one case on the view
+type alias Reminder =
+    { reminderDay : Int
+    , nextInvestmentDay : Int
+    , nextInvestmentMonth : Date.Month
+    }
 
 
 type alias Model =
@@ -45,7 +41,5 @@ type alias Model =
     , passwordInput : String
     , summary : Maybe Summary
     , serverUrl : String
-    , reminderDay : Maybe Int
-    , nextInvestmentDay : Int
-    , nextInvestmentMonth : Maybe Date.Month
+    , reminder : Maybe Reminder
     }

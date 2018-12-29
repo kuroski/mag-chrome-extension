@@ -13,9 +13,7 @@ init flags =
               , passwordInput = ""
               , summary = Nothing
               , serverUrl = flags.serverUrl
-              , reminderDay = Nothing
-              , nextInvestmentDay = 0
-              , nextInvestmentMonth = Nothing
+              , reminder = Nothing
               }
             , Cmd.batch
                 [ userSummary flags.serverUrl credentials.token credentials.id
@@ -29,9 +27,7 @@ init flags =
               , passwordInput = ""
               , summary = Nothing
               , serverUrl = flags.serverUrl
-              , reminderDay = Nothing
-              , nextInvestmentDay = 0
-              , nextInvestmentMonth = Nothing
+              , reminder = Nothing
               }
             , Cmd.none
             )
