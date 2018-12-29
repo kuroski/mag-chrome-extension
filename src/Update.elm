@@ -44,13 +44,27 @@ authenticationDecoder =
         (Decoder.field "id" (Decoder.map String.fromInt Decoder.int))
 
 
+stringToFloatDecoder : String -> Decoder.Decoder Float
+stringToFloatDecoder field =
+    Decoder.field field Decoder.string
+        |> Decoder.andThen
+            (\maybeFloat ->
+                case String.toFloat maybeFloat of
+                    Just a ->
+                        Decoder.succeed a
+
+                    _ ->
+                        Decoder.fail <| "API não retornou " ++ field ++ " como um float válido"
+            )
+
+
 userSummaryDecoder : Decoder.Decoder Summary
 userSummaryDecoder =
     Decoder.map4 Summary
         (Decoder.field "name" Decoder.string)
-        (Decoder.field "amount" Decoder.string)
-        (Decoder.field "gains" Decoder.string)
-        (Decoder.field "percentage" Decoder.string)
+        (stringToFloatDecoder "amount")
+        (stringToFloatDecoder "gains")
+        (stringToFloatDecoder "percentage")
 
 
 additionalReminderDecoder : Decoder.Decoder Int
@@ -142,7 +156,7 @@ update msg model =
             ( model, Cmd.none )
 
         GotUserSummary (Ok data) ->
-            ( { model | summary = Summary data.name data.amount data.gains data.percentage }, Cmd.none )
+            ( { model | summary = Just (Summary data.name data.amount data.gains data.percentage) }, Cmd.none )
 
         GotUserSummary (Err _) ->
             ( { model | page = Guest }, removeLocalstorage () )

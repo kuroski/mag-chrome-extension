@@ -20,15 +20,11 @@ type alias Credentials =
     }
 
 
-
--- TODO: Transform from String to Float and update decoders
-
-
 type alias Summary =
     { name : String
-    , amount : String
-    , gains : String
-    , percentage : String
+    , amount : Float
+    , gains : Float
+    , percentage : Float
     }
 
 
@@ -47,7 +43,7 @@ type alias Model =
     { page : Page
     , emailInput : String
     , passwordInput : String
-    , summary : Summary
+    , summary : Maybe Summary
     , serverUrl : String
     , reminderDay : Maybe Int
     , nextInvestmentDay : Int

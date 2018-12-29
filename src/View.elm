@@ -7,7 +7,7 @@ import FormatNumber.Locales exposing (Locale)
 import Html exposing (Html, a, br, button, div, form, h2, img, input, label, p, span, text)
 import Html.Attributes exposing (class, for, href, id, placeholder, src, type_, value, width)
 import Html.Events exposing (onInput, onSubmit)
-import Model exposing (Model, Page(..))
+import Model exposing (Model, Page(..), Summary)
 import Update exposing (Msg(..))
 import View.Helpers exposing (toPortugueseMonth)
 
@@ -76,6 +76,16 @@ guestView model =
 
 authorizedView : Model -> String -> Html Msg
 authorizedView model token =
+    div [ class "text-grey-lighter text-center" ]
+        [ summaryView model.summary
+        , div [ class "text-center mt-4" ]
+            [ remainingDaysToInvestmentView model
+            ]
+        ]
+
+
+summaryView : Maybe Summary -> Html Msg
+summaryView maybeSummary =
     let
         amountLocale =
             Locale 2 "." "," "−" "" "" ""
@@ -86,42 +96,29 @@ authorizedView model token =
         gainLocale =
             Locale 2 "." "," "− R$ " "" "+ R$ " ""
     in
-    div [ class "text-grey-lighter text-center" ]
-        [ div [ class "text-grey-light" ] [ text "Minha carteira" ]
-        , div [ class "text-4xl font-semibold" ]
-            [ case String.toFloat model.summary.amount of
-                Just amount ->
-                    div [] [ text <| "R$ " ++ format amountLocale amount ]
-
-                _ ->
-                    div [] [ text "R$ -,--" ]
-            ]
-        , div [ class "flex justify-between" ]
-            [ case String.toFloat model.summary.percentage of
-                Just percentage ->
-                    let
+    case maybeSummary of
+        Just summary ->
+            div []
+                [ div [ class "text-grey-light" ] [ text "Minha carteira" ]
+                , div [ class "text-4xl font-semibold" ]
+                    [ div [] [ text <| "R$ " ++ format amountLocale summary.amount ]
+                    ]
+                , div [ class "flex justify-between" ]
+                    [ let
                         formattedPercentage =
-                            format percentageLocale (percentage * 100) ++ "%"
-                    in
-                    if percentage > 0 then
+                            format percentageLocale (summary.percentage * 100) ++ "%"
+                      in
+                      if summary.percentage > 0 then
                         div [ class "text-green" ] [ text formattedPercentage ]
 
-                    else
+                      else
                         div [ class "text-red-light" ] [ text formattedPercentage ]
+                    , div [] [ text <| format gainLocale summary.gains ]
+                    ]
+                ]
 
-                _ ->
-                    div [] [ text "-,- %" ]
-            , case String.toFloat model.summary.gains of
-                Just gains ->
-                    div [] [ text <| format gainLocale gains ]
-
-                _ ->
-                    div [] [ text "R$ -,--" ]
-            ]
-        , div [ class "text-center mt-4" ]
-            [ remainingDaysToInvestmentView model
-            ]
-        ]
+        Nothing ->
+            div [] [ text "Carregando..." ]
 
 
 remainingDaysToInvestmentView : Model -> Html Msg
