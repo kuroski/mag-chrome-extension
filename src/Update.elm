@@ -114,7 +114,7 @@ type Msg
     | GotAuthentication (Result Http.Error Credentials)
     | GotUserSummary (Result Http.Error Summary)
     | GotAdditionalReminder (Result Http.Error Int)
-    | GotToday Date
+    | GotReminderDiff Int Date
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -148,36 +148,31 @@ update msg model =
             ( { model | page = Guest }, removeLocalstorage () )
 
         GotAdditionalReminder (Ok data) ->
-            ( { model | reminderDay = Just data }, Task.perform GotToday Date.today )
+            ( { model | reminderDay = Just data }, Task.perform (GotReminderDiff data) Date.today )
 
         GotAdditionalReminder (Err _) ->
             ( { model | reminderDay = Nothing }, removeLocalstorage () )
 
-        GotToday date ->
-            case ( Just date, model.reminderDay ) of
-                ( Just today, Just reminderDay ) ->
-                    let
-                        lastReminder =
-                            fromCalendarDate (year today) (month today) reminderDay
+        GotReminderDiff reminderDay today ->
+            let
+                lastReminder =
+                    fromCalendarDate (year today) (month today) reminderDay
 
-                        lastReminderDiff =
-                            Date.diff Days today lastReminder
+                lastReminderDiff =
+                    Date.diff Days today lastReminder
 
-                        nextReminder =
-                            Date.add Months 1 lastReminder
+                nextReminder =
+                    Date.add Months 1 lastReminder
 
-                        nextReminderDiff =
-                            Date.diff Days today nextReminder
-                    in
-                    if lastReminderDiff < 0 then
-                        ( { model | nextInvestmentDay = nextReminderDiff, nextInvestmentMonth = Just (Date.month nextReminder) }
-                        , setBadge (badgeEncoder <| nextReminderDiff)
-                        )
+                nextReminderDiff =
+                    Date.diff Days today nextReminder
+            in
+            if lastReminderDiff < 0 then
+                ( { model | nextInvestmentDay = nextReminderDiff, nextInvestmentMonth = Just (Date.month nextReminder) }
+                , setBadge (badgeEncoder <| nextReminderDiff)
+                )
 
-                    else
-                        ( { model | nextInvestmentDay = lastReminderDiff, nextInvestmentMonth = Just (Date.month lastReminder) }
-                        , setBadge (badgeEncoder <| lastReminderDiff)
-                        )
-
-                _ ->
-                    ( model, Cmd.none )
+            else
+                ( { model | nextInvestmentDay = lastReminderDiff, nextInvestmentMonth = Just (Date.month lastReminder) }
+                , setBadge (badgeEncoder <| lastReminderDiff)
+                )

@@ -20,12 +20,27 @@ type alias Credentials =
     }
 
 
+
+-- TODO: Transform from String to Float and update decoders
+
+
 type alias Summary =
     { name : String
     , amount : String
     , gains : String
     , percentage : String
     }
+
+
+
+{-
+   type alias ReminderDay =
+       { reminderDay : Int
+       , nextInvestmentDay : Int
+       , nextInvestmentMonth : Date.Month
+       }
+-}
+-- TODO: Refactor reminder to type alias and put only in one case on the view
 
 
 type alias Model =
