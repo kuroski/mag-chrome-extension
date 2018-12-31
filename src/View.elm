@@ -118,7 +118,14 @@ summaryView maybeSummary =
                 ]
 
         Nothing ->
-            div [] [ text "Carregando..." ]
+            div []
+                [ div [ class "text-grey-light" ] [ text "Minha carteira" ]
+                , div [ class "placeholder h-10 w-64 mt-1" ] []
+                , div [ class "flex justify-between mt-1" ]
+                    [ div [ class "placeholder h-4 w-12" ] []
+                    , div [ class "placeholder h-4 w-16" ] []
+                    ]
+                ]
 
 
 reminderView : Maybe Reminder -> Html Msg

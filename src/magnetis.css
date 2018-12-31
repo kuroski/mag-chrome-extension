@@ -1,5 +1,29 @@
 body {
   min-width: 350px;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   background-color: #22292f;
+}
+
+.placeholder {
+  animation: placeHolderShimmer 2s infinite linear forwards;
+  background-color: #f8fafc;
+  background-image: linear-gradient(
+    to right,
+    #f1f5f8 8%,
+    #dae1e7 18%,
+    #f1f5f8 33%
+  );
+  background-repeat: no-repeat;
+  background-size: 800px 100%;
+  position: relative;
+  border-radius: 0.25rem;
+}
+
+@keyframes placeHolderShimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
 }
