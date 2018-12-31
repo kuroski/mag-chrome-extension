@@ -1,4 +1,25 @@
 (() => {
+  const showNotification = (days = 0) => {
+    if (
+      !window.Notification ||
+      Notification.permission === "denied" ||
+      days > 0
+    )
+      return;
+
+    Notification.requestPermission(status => {
+      const notification = new Notification("Vamos fazer uma nova aplicação?", {
+        body:
+          "Chegou o dia em que você nos pediu para lembrar de fazer uma nova aplicação na sua conta. Para isto, basta clicar nesta notificação"
+      });
+
+      notification.onclick = event => {
+        event.preventDefault();
+        window.open("https://magnetis.com.br/nova-aplicacao", "_blank");
+      };
+    });
+  };
+
   const millisecondsToDays = time => {
     const DAY_MILLISECONDS = 24 * 60 * 60 * 1000;
     return Math.floor(time / DAY_MILLISECONDS);
@@ -21,6 +42,7 @@
   const badgeDay = localStorage.getItem("badgeDay");
   const diffDates = Math.abs(now - badgeDate);
   const newDay = badgeDay - millisecondsToDays(diffDates);
+  showNotification(newDay);
 
   if (!badgeDate || !badgeDay || !chrome || !chrome.browserAction) return;
 
