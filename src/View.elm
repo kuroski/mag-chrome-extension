@@ -7,7 +7,7 @@ import FormatNumber.Locales exposing (Locale)
 import Html exposing (Html, a, br, button, div, form, h2, img, input, label, p, span, text)
 import Html.Attributes exposing (class, for, href, id, placeholder, src, type_, value, width)
 import Html.Events exposing (onInput, onSubmit)
-import Model exposing (Model, Page(..), Reminder, Summary)
+import Model exposing (Model, Page(..), Reminder, RemoteData(..), Summary)
 import Update exposing (Msg(..))
 import View.Helpers exposing (toPortugueseMonth)
 
@@ -128,10 +128,10 @@ summaryView maybeSummary =
                 ]
 
 
-reminderView : Maybe Reminder -> Html Msg
+reminderView : RemoteData Reminder -> Html Msg
 reminderView maybeReminder =
     case maybeReminder of
-        Just reminder ->
+        Data reminder ->
             div [ class "text-xs mb-2" ]
                 [ div [ class "flex flex-col" ]
                     [ div
@@ -154,5 +154,8 @@ reminderView maybeReminder =
                     ]
                 ]
 
-        Nothing ->
+        Loading ->
+            span [] [ text "loading" ]
+
+        NoData ->
             span [] []

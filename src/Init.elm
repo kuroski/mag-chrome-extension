@@ -1,6 +1,6 @@
 module Init exposing (init)
 
-import Model exposing (Flags, Model, Page(..), Summary)
+import Model exposing (Flags, Model, Page(..), RemoteData(..), Summary)
 import Update exposing (Msg, userInformation, userSummary)
 
 
@@ -13,7 +13,7 @@ init flags =
               , passwordInput = ""
               , summary = Nothing
               , serverUrl = flags.serverUrl
-              , reminder = Nothing
+              , reminder = Loading
               }
             , Cmd.batch
                 [ userSummary flags.serverUrl credentials.token credentials.id
@@ -27,7 +27,7 @@ init flags =
               , passwordInput = ""
               , summary = Nothing
               , serverUrl = flags.serverUrl
-              , reminder = Nothing
+              , reminder = Loading
               }
             , Cmd.none
             )

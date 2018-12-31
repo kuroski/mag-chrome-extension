@@ -1,4 +1,4 @@
-module Model exposing (Credentials, Flags, Model, Page(..), Reminder, Summary)
+module Model exposing (Credentials, Flags, Model, Page(..), Reminder, RemoteData(..), Summary)
 
 import Date exposing (Date)
 
@@ -6,6 +6,12 @@ import Date exposing (Date)
 type Page
     = Authorized Credentials
     | Guest
+
+
+type RemoteData a
+    = NoData
+    | Loading
+    | Data a
 
 
 type alias Flags =
@@ -41,5 +47,5 @@ type alias Model =
     , passwordInput : String
     , summary : Maybe Summary
     , serverUrl : String
-    , reminder : Maybe Reminder
+    , reminder : RemoteData Reminder
     }
