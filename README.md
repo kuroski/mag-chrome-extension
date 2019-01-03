@@ -10,17 +10,21 @@ You can find the most recent version of this guide [here](https://github.com/hal
 ```
 {
   "name": "Magnetis Summary",
-  "short_name": "Magnetis Summary",
+  "short_name": "MagSummary",
   "version": "1.0",
   "description": "Build an Extension!",
   "manifest_version": 2,
   "browser_action": {
     "default_popup": "index.html"
   },
-  "permissions": ["activeTab"],
+  "permissions": ["activeTab", "notifications"],
+  "background": {
+    "scripts": ["background.js"]
+  },
   "icons": {
-    "72": "images/icons/icon-72x72.png",
-    "96": "images/icons/icon-96x96.png"
+    "48": "images/icons/logo-48.jpg",
+    "72": "images/icons/logo-72.jpg",
+    "144": "images/icons/logo-144.jpg"
   }
 }
 ```

@@ -155,7 +155,24 @@ reminderView maybeReminder =
                 ]
 
         Loading ->
-            span [] [ text "loading" ]
+            div [ class "flex flex-col items-center" ]
+                [ div [ class "relative flex justify-center items-center mb-2" ]
+                    [ div [ class "placeholder absolute pin h-2 w-6 mx-auto mt-5" ] []
+                    , div [ class "placeholder absolute pin h-2 w-3 mx-auto mt-8" ] []
+                    , img [ width 46, src "images/calendar.svg" ] []
+                    ]
+                , div [ class "placeholder h-3 w-8" ] []
+                , div [ class "placeholder h-3 w-32 mt-1" ] []
+                ]
 
         NoData ->
-            span [] []
+            div [ class "flex flex-col items-center text-xs" ]
+                [ img [ width 46, src "images/calendar.svg", class "mb-2" ] []
+                , span
+                    [ class "font-semibold" ]
+                    [ text "- dias"
+                    ]
+                , span []
+                    [ text "Você ainda não possui um lembrete"
+                    ]
+                ]
